@@ -1,6 +1,6 @@
 # 在docker中测试rabbitmq集群
 
-配置了3个rabbitmq实例，分别为node1、node2、node3
+配置了3个rabbitmq实例，分别为node1、node2、node3  
 用haproxy和nginx分别做了负载均衡测试
 
 
