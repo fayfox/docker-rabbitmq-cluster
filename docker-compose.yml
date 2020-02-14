@@ -1,0 +1,69 @@
+version: "3"
+services:
+  node1:
+    # 自己编译的镜像，在官方镜像基础上加入了官方的延迟队列插件
+    image: fayfox/rabbitmq-delayed-message-exchange:1.0.0
+    volumes:
+      # 时区文件
+      - ./etc/localtime:/etc/localtime:ro
+    environment:
+      # cookie一致的实例才能组成集群
+      RABBITMQ_ERLANG_COOKIE: ZDDGQMQZNGOKOETCOXKA
+    ports:
+      # 把端口都暴露出来，方便测试
+      - 15672:15672
+      - 5672:5672
+    hostname: node1
+  node2:
+    image: fayfox/rabbitmq-delayed-message-exchange:1.0.0
+    volumes:
+      - ./etc/localtime:/etc/localtime:ro
+    environment:
+      RABBITMQ_ERLANG_COOKIE: ZDDGQMQZNGOKOETCOXKA
+    ports:
+      - 15673:15672
+      - 5673:5672
+    hostname: node2
+    links:
+      - node1:node1
+  node3:
+    image: fayfox/rabbitmq-delayed-message-exchange:1.0.0
+    volumes:
+      - ./etc/localtime:/etc/localtime:ro
+    environment:
+      RABBITMQ_ERLANG_COOKIE: ZDDGQMQZNGOKOETCOXKA
+    ports:
+      - 15674:15672
+      - 5674:5672
+    hostname: node3
+    links:
+      - node1:node1
+      - node2:node2
+  # Haproxy负载均衡
+  haproxy:
+    image: haproxy
+    volumes:
+      - ./conf/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - ./etc/localtime:/etc/localtime:ro
+    ports:
+      - 1080:1080
+      - 1081:1081
+      - 8100:8100
+    links:
+      - node1:node1
+      - node2:node2
+      - node3:node3
+  # Nginx的负载均衡
+  nginx:
+    image: nginx
+    volumes:
+      - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./conf/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./etc/localtime:/etc/localtime:ro
+    ports:
+      - 2080:80
+      - 2081:81
+    links:
+      - node1:node1
+      - node2:node2
+      - node3:node3
