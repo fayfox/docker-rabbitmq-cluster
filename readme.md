@@ -34,3 +34,7 @@ Starting node rabbit@node2 ...
 - 直连端口：5672、5673、5674
 - 基于Haproxy负载均衡端口：1080
 - 基于Nginx负载均衡端口：2080
+
+5、SpringBoot整合RabbitMQ示例
+
+https://github.com/fayfox/springboot-first-app/tree/master/src/main/java/com/fayfox/myspringboot/rabbitmq
