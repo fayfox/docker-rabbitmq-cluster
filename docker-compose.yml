@@ -24,8 +24,6 @@ services:
       - 15673:15672
       - 5673:5672
     hostname: node2
-    links:
-      - node1:node1
   node3:
     image: fayfox/rabbitmq-delayed-message-exchange:1.0.0
     volumes:
@@ -36,9 +34,6 @@ services:
       - 15674:15672
       - 5674:5672
     hostname: node3
-    links:
-      - node1:node1
-      - node2:node2
   # Haproxy负载均衡
   haproxy:
     image: haproxy
@@ -49,10 +44,6 @@ services:
       - 1080:1080
       - 1081:1081
       - 8100:8100
-    links:
-      - node1:node1
-      - node2:node2
-      - node3:node3
   # Nginx的负载均衡
   nginx:
     image: nginx
@@ -63,7 +54,3 @@ services:
     ports:
       - 2080:80
       - 2081:81
-    links:
-      - node1:node1
-      - node2:node2
-      - node3:node3
